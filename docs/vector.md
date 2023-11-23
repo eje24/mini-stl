@@ -2,44 +2,62 @@ To implement: `mini_stl::vector`.
 # Spec
 
 #### General
- Constructor
- - See constructor [documentation](https://en.cppreference.com/w/cpp/container/vector/vector).
- 
- Destructor
- `operator=`
- `assign`
- `assign_range`
- `get_allocator`
+
+ | Member Function | Status | 
+|---------------|----------- |
+|Constructors | |
+|Destructor | |
+|`operator=` (copy)| |
+|`operator=` (move)| |
+|`assign`| |
+|`assign_range`| |
+|`get_allocator`| |
+
+
 #### Element Access
-`at`
-`operator[]`
-`front`
-`back`
-`data`
+
+| Member Function | Status | 
+|---------------|----------- |
+|`at` | |
+|`operator[]` | |
+|`front`| |
+|`back`| |
+|`data`| |
+
 #### Iterators
-`begin`/`cbegin`
-`end`/`cend`
-`rbegin`/`crbegin`
-`rend`/`crend`
+| Member Function | Status | 
+|---------------|----------- |
+|`begin`/`cbegin` | |
+|`end`/`cend` | |
+|`rbegin`/`rend`| |
+|`rend`/`cend`| |
+
 #### Capacity
-`empty`
-`size`
-`max_size`
-`reserve`
-`capacity`
-`shrink_to_fit`
+
+| Member Function | Status | 
+|---------------|----------- |
+|`empty` | |
+|`size`| |
+|`max_size`| |
+|`reserve`| |
+|`capacity`| |
+|`shrink_to_fit`| |
+
 #### Modifiers
-`clear`
-`insert`
-`insert_range`
-`emplace`
-`erase`
-`push_back`
-`emplace_back`
-`append_range`
-`pop_back`
-`resize`
-`swap`
+| Member Function | Status | 
+|---------------|----------- |
+|`clear` | |
+|`insert`| |
+|`insert_range`| |
+|`emplace`| |
+|`erase`| |
+|`push_back`| |
+|`emplace_back`| |
+|`append_range`| |
+|`pop_back`| |
+|`resize`| |
+|`swap`| |
+
 # Testing
 Driven by testing harness.
 #### Memory Safety Tests
