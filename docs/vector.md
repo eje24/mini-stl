@@ -36,12 +36,12 @@ To implement: `mini_stl::vector`.
 
 | Member Function | Status | 
 |---------------|----------- |
-|`empty` | |
+|`empty` | ✅|
 |`size`| ✅|
-|`max_size`| |
-|`reserve`| |
+|`max_size`| ✅|
+|`reserve`| ✅|
 |`capacity`| ✅|
-|`shrink_to_fit`| |
+|`shrink_to_fit`| ✅|
 
 #### Modifiers
 | Member Function | Status | 

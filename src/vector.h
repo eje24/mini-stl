@@ -94,10 +94,6 @@ namespace ministl {
       return _alloc;
     }
 
-
-
-
-
     // Element Access
     T& at(const std::size_t idx){
       if(idx >= _size){
@@ -146,14 +142,31 @@ namespace ministl {
     }
 
     // Capacity
+    constexpr bool empty() const {
+      return _size == 0;
+    }
+
     constexpr size_type size() const {
       return _size;
+    }
+
+    constexpr void max_size() const {
+      return std::allocator_traits<allocator_type>::max_size(_alloc);
+    }
+
+    constexpr void reserve(size_type new_capacity){
+      grow_capacity(new_capacity);
     }
 
     constexpr size_type capacity() const {
       return _capacity;
     }
 
+    constexpr void shrink_to_fit(){
+      shrink_capacity(_size);
+    }
+
+    // Modifiers
     constexpr void push_back(const T& value){
       // grow if necessary
       if(_size == _capacity){
@@ -179,7 +192,6 @@ namespace ministl {
       emplace(end(), std::forward<Args>(args)...);
     }
 
-    // Modifiers
     template<typename... Args>
     iterator emplace(const_iterator cpos, Args&&... args){
       // underlying memory might change, but offset will stay the same
@@ -214,18 +226,33 @@ namespace ministl {
     }
   private:
     // update capacity to be at least new capacity
+    // no-op if new capacity is less than or equal to current capacity
     void grow_capacity(size_type new_capacity){
       if(new_capacity > _capacity){
-        // allocate new memory
-        T* new_data = _alloc.allocate(new_capacity);
-        // copy over old data
-        std::uninitialized_move(begin(), end(), new_data);
-        // deallocate old data
-        _alloc.deallocate(_data, _size);
-        // set new data
-        _data = new_data;
-        _capacity = new_capacity;
+        realloc_capacity(new_capacity);
       }
+    }
+    // shrink capacity to be exactly new capacity
+    // no-op if new capacity is greater than or equal to current capacity
+    void shrink_capacity(size_type new_capacity){
+      if(new_capacity < _capacity){
+        realloc_capacity(new_capacity);
+      }
+    }
+
+    // update capacity to be exactly capacity
+    void realloc_capacity(size_type new_capacity){
+      // allocate new memory
+      T* new_data = _alloc.allocate(new_capacity);
+      // copy over old data
+      size_type copy_len = std::min(_size, new_capacity);
+      std::uninitialized_move(begin(), begin() + copy_len, new_data);
+      // deallocate old data
+      _alloc.deallocate(_data, _size);
+      // set new data
+      _data = new_data;
+      _capacity = new_capacity;
+      _size = std::min(_size, _capacity);
     }
   };
 }
