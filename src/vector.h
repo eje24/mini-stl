@@ -1,5 +1,7 @@
-namespace ministl {
+#ifndef MINISTL_VECTOR_H
+#define MINISTL_VECTOR_H
 
+namespace ministl {
   template<typename T, typename Allocator = std::allocator<T>>
   class vector{
   public:
@@ -12,6 +14,7 @@ namespace ministl {
     using const_iterator = const T*;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
   private:
     T* _data = nullptr;
     size_type _size = 0;
@@ -19,15 +22,9 @@ namespace ministl {
     allocator_type _alloc;
 
     int capacity_from_size(std::size_t size){
-      size_t res = size & (size - 1);
-      if(res){
-        // not power of two
-        return res << 1; 
-      }else{
-        // otherwise, return twice the size
-        return size << 1;
-      }
+      return std::max((size_type) 3, (size_type) (size * 1.5));
     }
+
   public:
     // Constructors
     vector() = default;
@@ -87,30 +84,121 @@ namespace ministl {
       return *this;
     }
 
-
-
-    // Element Access
-    T& operator[](const std::size_t idx){
-      // hopefully this returns a reference?
-      return _data[idx];
-    }
-    
-    // Iterators
-
-    // Capacity
-    size_type size(){
-      return _size;
+    vector& operator=(std::initializer_list<T> initializer_list){
+      vector tmp(initializer_list);
+      swap(tmp);
+      return *this;
     }
 
-    size_type capacity(){
-      return _capacity;
-    }
-
-    const allocator_type& allocator(){
+    allocator_type& get_allocator() const{
       return _alloc;
     }
 
+
+
+
+
+    // Element Access
+    T& at(const std::size_t idx){
+      if(idx >= _size){
+        throw std::out_of_range("Index out of range");
+      }
+      return _data[idx];
+    }
+    T& operator[](const std::size_t idx) const {
+      // hopefully this returns a reference?
+      return _data[idx];
+    }
+    T& front(){
+      return _data[0];
+    }
+    T& back(){
+      return _data[_size - 1];
+    }
+    T* data(){
+      return _data;
+    }
+    
+    // Iterators
+    iterator begin(){
+      return iterator(_data);
+    }
+    const_iterator cbegin(){
+      return const_iterator(_data);
+    }
+    iterator end(){
+      return iterator(_data) + _size;
+    }
+    const_iterator cend(){
+      return const_iterator(_data) + _size;
+    }
+    reverse_iterator rbegin(){
+      return reverse_iterator(_data + _size - 1);
+    }
+    reverse_iterator rend(){
+      return reverse_iterator(_data - 1);
+    }
+    const_reverse_iterator crbegin(){
+      return const_reverse_iterator(_data + _size - 1);
+    }
+    const_reverse_iterator crend(){
+      return const_reverse_iterator(_data - 1);
+    }
+
+    // Capacity
+    constexpr size_type size() const {
+      return _size;
+    }
+
+    constexpr size_type capacity() const {
+      return _capacity;
+    }
+
+    constexpr void push_back(const T& value){
+      // grow if necessary
+      if(_size == _capacity){
+        grow_capacity(capacity_from_size(_size + 1));
+      }
+      // copy over data
+      _data[_size] = value;
+      _size += 1;
+    }
+
+    constexpr void push_back(T&& value){
+      // grow if necessary
+      if(_size == _capacity){
+        grow_capacity(capacity_from_size(_size + 1));
+      }
+      // copy over data
+      _data[_size] = std::move(value);
+      _size += 1;
+    }
+
+    template<typename... Args>
+    void emplace_back(Args&&... args){
+      emplace(end(), std::forward<Args>(args)...);
+    }
+
     // Modifiers
+    template<typename... Args>
+    iterator emplace(const_iterator cpos, Args&&... args){
+      // underlying memory might change, but offset will stay the same
+      size_t offset = cpos - cbegin();
+      // grow if necessary
+      if(_size == _capacity){
+        grow_capacity(capacity_from_size(_size + 1));
+      }
+      // recover iterator to desired position in memory
+      iterator pos = begin() + offset;
+      // copy over data, unless we're inserting at the end
+      if(pos != end()){
+        std::copy_backward(pos, end(), end() + 1);
+      }
+      // insert new data
+      std::allocator_traits<allocator_type>::construct(_alloc, pos, std::forward<Args>(args)...);
+      _size += 1;
+      return pos;
+    }
     void swap(vector& other){
       // check that allocators are swappable
       if constexpr (std::allocator_traits<allocator_type>::propagate_on_container_swap::value){
@@ -124,7 +212,22 @@ namespace ministl {
       std::swap(_capacity, other._capacity);
       std::swap(_data, other._data);
     }
-
+  private:
+    // update capacity to be at least new capacity
+    void grow_capacity(size_type new_capacity){
+      if(new_capacity > _capacity){
+        // allocate new memory
+        T* new_data = _alloc.allocate(new_capacity);
+        // copy over old data
+        std::uninitialized_move(begin(), end(), new_data);
+        // deallocate old data
+        _alloc.deallocate(_data, _size);
+        // set new data
+        _data = new_data;
+        _capacity = new_capacity;
+      }
+    }
   };
 }
 
+#endif

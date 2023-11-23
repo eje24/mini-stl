@@ -5,42 +5,42 @@ To implement: `mini_stl::vector`.
 
  | Member Function | Status | 
 |---------------|----------- |
-|Constructors | |
-|Destructor | |
-|`operator=` (copy)| |
-|`operator=` (move)| |
+|Constructors | ✅ |
+|Destructor | ✅ |
+|`operator=` (copy)| ✅ |
+|`operator=` (move)| ✅ |
 |`assign`| |
 |`assign_range`| |
-|`get_allocator`| |
+|`get_allocator`| ✅ |
 
 
 #### Element Access
 
 | Member Function | Status | 
 |---------------|----------- |
-|`at` | |
-|`operator[]` | |
-|`front`| |
-|`back`| |
-|`data`| |
+|`at` | ✅ |
+|`operator[]` | ✅ |
+|`front`| ✅ |
+|`back`| ✅ |
+|`data`| ✅ |
 
 #### Iterators
 | Member Function | Status | 
 |---------------|----------- |
-|`begin`/`cbegin` | |
-|`end`/`cend` | |
-|`rbegin`/`rend`| |
-|`rend`/`cend`| |
+|`begin`/`cbegin` | ✅ |
+|`end`/`cend` | ✅|
+|`rbegin`/`rend`| ✅|
+|`rend`/`cend`| ✅|
 
 #### Capacity
 
 | Member Function | Status | 
 |---------------|----------- |
 |`empty` | |
-|`size`| |
+|`size`| ✅|
 |`max_size`| |
 |`reserve`| |
-|`capacity`| |
+|`capacity`| ✅|
 |`shrink_to_fit`| |
 
 #### Modifiers
@@ -51,12 +51,16 @@ To implement: `mini_stl::vector`.
 |`insert_range`| |
 |`emplace`| |
 |`erase`| |
-|`push_back`| |
-|`emplace_back`| |
+|`push_back`| ✅|
+|`emplace`| ✅|
+|`emplace_back`| ✅|
 |`append_range`| |
 |`pop_back`| |
 |`resize`| |
-|`swap`| |
+|`swap`| ✅|
+
+# Notes
+I'm not really consistent about using `constexpr`.
 
 # Testing
 Driven by testing harness.
